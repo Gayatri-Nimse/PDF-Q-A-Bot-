@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DOCMIND — PDF Intelligence</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=JetBrains+Mono:wght@300;400;500&family=Syne:wght@400;600;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
+</head>
+<body>
+
+  <div class="bg-mesh"></div>
+  <svg class="grain" xmlns="http://www.w3.org/2000/svg"><filter id="grain"><feTurbulence type="fractalNoise" baseFrequency="0.65" numOctaves="3" stitchTiles="stitch"/><feColorMatrix type="saturate" values="0"/><feBlend in="SourceGraphic" mode="multiply"/></filter><rect width="100%" height="100%" filter="url(#grain)" opacity="0.04"/></svg>
+
+  <!-- ── Sidebar ──────────────────────────────────────────────────────────── -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div class="logo">
+        <span class="logo-icon">◈</span>
+        <span class="logo-text">DOCMIND</span>
+      </div>
+      <p class="logo-sub">PDF Intelligence Engine</p>
+    </div>
+
+    <div class="upload-section">
+      <!-- Drop zone -->
+      <div class="upload-zone" id="uploadZone">
+        <input type="file" id="fileInput" accept=".pdf" hidden />
+        <div class="upload-icon">⬆</div>
+        <p class="upload-label">Drop PDF here</p>
+        <p class="upload-sub">or <span class="upload-link" id="uploadBtn">browse files</span></p>
+        <p class="upload-limit">Up to 500 MB · any page count</p>
+      </div>
+
+      <!-- Progress (shown while processing) -->
+      <div class="upload-progress" id="uploadProgress" style="display:none">
+        <div class="progress-header">
+          <span class="progress-stage" id="progressStage">UPLOAD</span>
+          <span class="progress-pct"  id="progressPct">0%</span>
+        </div>
+        <div class="progress-bar">
+          <div class="progress-fill" id="progressFill"></div>
+        </div>
+        <p class="progress-text" id="progressText">Starting…</p>
+        <div class="progress-stages">
+          <span class="ps-step" data-step="UPLOAD">Upload</span>
+          <span class="ps-arrow">→</span>
+          <span class="ps-step" data-step="CHUNKING">Chunk</span>
+          <span class="ps-arrow">→</span>
+          <span class="ps-step" data-step="EMBEDDING">Embed</span>
+          <span class="ps-arrow">→</span>
+          <span class="ps-step" data-step="INDEXING">Index</span>
+          <span class="ps-arrow">→</span>
+          <span class="ps-step" data-step="READY">Ready</span>
+        </div>
+      </div>
+
+      <!-- Doc badge (shown when ready) -->
+      <div class="doc-info" id="docInfo" style="display:none">
+        <div class="doc-badge">
+          <span class="doc-icon">▣</span>
+          <div>
+            <p class="doc-name"  id="docName">document.pdf</p>
+            <p class="doc-stats" id="docStats">— chunks · — pages</p>
+          </div>
+          <button class="doc-remove" id="resetBtn" title="Remove">✕</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Model info -->
+    <div class="model-panel">
+      <p class="panel-title">SYSTEM CONFIG</p>
+      <div class="model-row"><span class="model-key">LLM</span><span class="model-val">LLaMA-3.3-70B</span></div>
+      <div class="model-row"><span class="model-key">Provider</span><span class="model-val">Groq API</span></div>
+      <div class="model-row"><span class="model-key">Embeddings</span><span class="model-val">MiniLM-L6-v2</span></div>
+      <div class="model-row"><span class="model-key">Vector DB</span><span class="model-val">ChromaDB</span></div>
+      <div class="model-row"><span class="model-key">Framework</span><span class="model-val">LangChain</span></div>
+      <div class="model-row"><span class="model-key">Chunk Size</span><span class="model-val">1000 chars</span></div>
+      <div class="model-row"><span class="model-key">Overlap</span><span class="model-val">200 chars</span></div>
+      <div class="model-row"><span class="model-key">Retrieval K</span><span class="model-val">Top 5 chunks</span></div>
+      <div class="model-row"><span class="model-key">Page Batch</span><span class="model-val">30 pages</span></div>
+      <div class="model-row"><span class="model-key">Max PDF</span><span class="model-val">500 MB / ∞ pages</span></div>
+    </div>
+
+    <div class="tips-panel">
+      <p class="panel-title">QUERY TIPS</p>
+      <p class="tip-item">↳ Ask follow-up questions naturally</p>
+      <p class="tip-item">↳ Reference specific sections or pages</p>
+      <p class="tip-item">↳ Ask for summaries or comparisons</p>
+      <p class="tip-item">↳ Request step-by-step explanations</p>
+      <p class="tip-item">↳ Works on 1-page or 1000-page PDFs</p>
+    </div>
+  </aside>
+
+  <!-- ── Main ─────────────────────────────────────────────────────────────── -->
+  <main class="main">
+    <header class="topbar">
+      <div class="topbar-left">
+        <button class="sidebar-toggle" id="sidebarToggle">☰</button>
+        <div class="status-dot" id="statusDot"></div>
+        <span class="status-text" id="statusText">Awaiting document</span>
+      </div>
+      <div class="topbar-right">
+        <span class="topbar-badge" id="modelBadge">llama-3.3-70b-versatile · groq</span>
+      </div>
+    </header>
+
+    <div class="chat-area" id="chatArea">
+      <div class="empty-state" id="emptyState">
+        <div class="empty-icon">◈</div>
+        <h2 class="empty-title">Upload a PDF to begin</h2>
+        <p class="empty-sub">Your document will be chunked, embedded, and indexed.<br />Then ask anything — the AI reasons over the content.</p>
+        <div class="empty-features">
+          <div class="feature-pill">⚡ Semantic search</div>
+          <div class="feature-pill">🧠 LLM reasoning</div>
+          <div class="feature-pill">💬 Multi-turn memory</div>
+          <div class="feature-pill">📄 Source citations</div>
+          <div class="feature-pill">📚 Large PDF support</div>
+        </div>
+      </div>
+    </div>
+
+    <footer class="input-area">
+      <div class="input-wrapper">
+        <textarea id="questionInput" class="question-input"
+          placeholder="Ask a question about your document…" rows="1" disabled></textarea>
+        <button class="send-btn" id="sendBtn" disabled>
+          <span class="send-arrow">↑</span>
+        </button>
+      </div>
+      <p class="input-hint">Press <kbd>Enter</kbd> to send · <kbd>Shift+Enter</kbd> for new line</p>
+    </footer>
+  </main>
+
+  <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>

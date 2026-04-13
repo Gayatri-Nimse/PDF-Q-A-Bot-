@@ -1,0 +1,27 @@
+# ── Web Framework ─────────────────────────────────────────────────────────────
+flask==3.0.3
+python-dotenv==1.0.1
+
+# ── LangChain Core ────────────────────────────────────────────────────────────
+langchain==0.3.7
+langchain-community==0.3.7
+
+# ── LLM Provider: Groq (free tier — llama-3.3-70b-versatile) ─────────────────
+langchain-groq==0.2.1
+groq==0.11.0
+
+# ── Embeddings: HuggingFace sentence-transformers (local, free) ───────────────
+langchain-huggingface==0.1.2
+sentence-transformers==3.2.1
+# CPU-only torch (install separately):
+# pip install torch --index-url https://download.pytorch.org/whl/cpu
+
+# ── Vector Database: ChromaDB ─────────────────────────────────────────────────
+langchain-chroma==0.1.4
+chromadb==0.5.18
+
+# ── PDF Loading (low-level streaming) ────────────────────────────────────────
+pypdf==5.1.0
+
+# ── Utilities ─────────────────────────────────────────────────────────────────
+werkzeug==3.0.6
