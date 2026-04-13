@@ -9,7 +9,7 @@
 | Component         | Technology                              | Details                                      |
 |-------------------|-----------------------------------------|----------------------------------------------|
 | **LLM**           | `llama-3.3-70b-versatile`               | Via Groq API (free tier) · 128k context       |
-| **Embeddings**    | `sentence-transformers/all-MiniLM-L6-v2` | Local HuggingFace model · 384 dimensions     |
+| **Embeddings**    | `BAAI/bge-small-en-v1.5`                | Local HuggingFace model · 384 dimensions     |
 | **Vector DB**     | ChromaDB (persistent, local)            | Cosine similarity search · per-doc collections|
 | **RAG Framework** | LangChain                               | ConversationalRetrievalChain + memory         |
 | **PDF Loader**    | PyPDFLoader (LangChain Community)       | Page-level extraction with metadata           |
@@ -190,7 +190,7 @@ Edit in the relevant files:
 | `LLM_MODEL`          | `rag/qa_chain.py`       | `llama-3.3-70b-versatile` | Groq model to use             |
 | `LLM_TEMPERATURE`    | `rag/qa_chain.py`       | 0.2                  | Lower = more factual                 |
 | `window_size`        | `rag/qa_chain.py`       | 5                    | Conversation turns to remember       |
-| `EMBEDDING_MODEL`    | `rag/vector_store.py`   | `all-MiniLM-L6-v2`  | HuggingFace embedding model          |
+| `EMBEDDING_MODEL`    | `rag/vector_store.py`   | `bge-small-en-v1.5`  | HuggingFace embedding model          |
 
 ---
 
